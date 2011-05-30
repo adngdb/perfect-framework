@@ -1,7 +1,7 @@
 <?php
 
-require_once('config.php');
-require_once('controller.php');
+require_once(APPLICATION_ROOT.'core/config.php');
+require_once(APPLICATION_ROOT.'core/controller.php');
 
 class Perfect
 {
@@ -10,6 +10,8 @@ class Perfect
     public static function init()
     {
         self::$config = new Config();
+
+        spl_autoload_register(array('Perfect', 'autoload'));
     }
 
     public static function run()
@@ -28,6 +30,9 @@ class Perfect
         echo ob_get_clean();
     }
 
+    /**
+     * Parse the query string into a controller name, a method name and parameters for the method.
+     */
     private static function parseQuery()
     {
         $controller = '';
@@ -59,8 +64,8 @@ class Perfect
             default:
                 $controller = $parts[0];
                 $method = $parts[1];
-                unset($parts[0])
-                unset($parts[1])
+                unset($parts[0]);
+                unset($parts[1]);
                 $params['perfect'] = $parts;
         }
 
@@ -71,5 +76,37 @@ class Perfect
     {
         if (class_exists($class, false))
             return true;
+
+        $paths = array(
+            'Controller' => 'application/controllers/',
+            'Model' => 'application/models/',
+            'Helper' => 'core/helpers/',
+        );
+
+        foreach ($paths as $suffix => $path)
+        {
+            if (self::strEndsWith($class, $suffix))
+            {
+                $pathToFile = APPLICATION_ROOT.$path;
+                $pathToFile .= strtolower(strstr($class, $suffix, true));
+                $pathToFile .= '.php';
+
+                if (file_exists($pathToFile))
+                {
+                    include($pathToFile);
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
+
+    private static function strEndsWith($string, $test) {
+        $strlen = strlen($string);
+        $testlen = strlen($test);
+        if ($testlen > $strlen) return false;
+        return substr_compare($string, $test, -$testlen) === 0;
+    }
+
 }
