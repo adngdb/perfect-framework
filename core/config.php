@@ -21,7 +21,7 @@ class Config
 
     public function get($option, $defaultValue = null)
     {
-        if ($this->$option !== null)
+        if (isset($this->$option) && $this->$option !== null)
         {
             return $this->$option->value;
         }
