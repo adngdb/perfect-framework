@@ -4,9 +4,12 @@ class Controller
 {
     private $args = array();
 
-    public function set($data)
+    public function set($key, $value = null)
     {
-        $this->args[] = $data;
+        if (is_array($key))
+            $this->args = array_merge($this->args, $key);
+        else
+            $this->args[$key] = $value;
     }
 
     public function getVars()
