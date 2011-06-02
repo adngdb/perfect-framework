@@ -33,7 +33,12 @@ class Perfect
 
         // Instanciate the controller, execute the method
         self::$controller = new $controller();
-        call_user_func_array(array(self::$controller, $method), $params);
+        $vars = call_user_func_array(array(self::$controller, $method), $params);
+
+        if ($vars != null)
+        {
+            self::$controller->set($vars);
+        }
     }
 
     /**
@@ -101,7 +106,7 @@ class Perfect
                     $method = $parts[1];
                     unset($parts[0]);
                     unset($parts[1]);
-                    $params['perfect'] = $parts;
+                    $params = $parts;
             }
         }
 
@@ -118,6 +123,15 @@ class Perfect
         $controller .= 'Controller';
 
         self::$page['controller_class'] = $controller;
+
+        // Parse the parameters and remove the bad ones
+        foreach ($params as $key => $value)
+        {
+            if (empty($value))
+            {
+                unset($params[$key]);
+            }
+        }
 
         return array($controller, $method, $params);
     }
