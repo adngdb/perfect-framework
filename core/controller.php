@@ -8,4 +8,9 @@ class Controller
     {
         $this->args[] = $data;
     }
+
+    public function getVars()
+    {
+        return $this->args;
+    }
 }
