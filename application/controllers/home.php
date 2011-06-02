@@ -9,6 +9,9 @@ class HomeController extends Controller
     public function index()
     {
         echo 'hehehe';
+        $tt = 34;
+
+        return get_defined_vars();
     }
 
     public function name($name, $age)
