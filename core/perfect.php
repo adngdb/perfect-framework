@@ -10,8 +10,10 @@ class Perfect
 
     public static function init()
     {
+        // Create the default configuration
         self::$config = new Config();
 
+        // Register the autoloader function
         spl_autoload_register(array('Perfect', 'autoload'));
     }
 
