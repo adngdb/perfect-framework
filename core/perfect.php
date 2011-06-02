@@ -7,6 +7,13 @@ class Perfect
 {
     public static $config = null;
     public static $controller = null;
+    public static $contentForLayout = '';
+
+    private static $page = array(
+        'controller_name' => '',
+        'controller_class' => '',
+        'method_name' => '',
+    );
 
     public static function init()
     {
@@ -29,12 +36,25 @@ class Perfect
         call_user_func_array(array(self::$controller, $method), $params);
     }
 
-    public static function render()
+    public static function render($__vars = array())
     {
-        $layout = self::$config->get('layout');
+        self::$contentForLayout = self::renderView(
+            APPLICATION_ROOT . 'application/views/' . self::$page['controller_name'] . '/' . self::$page['method_name'] . '.phtml',
+            self::$controller->getVars()
+        );
+
+        extract($__vars);
         ob_start();
-        include('application/views/' . $layout . '.phtml');
+        include('application/views/' . self::$config->get('layout') . '.phtml');
         echo ob_get_clean();
+    }
+
+    private static function renderView($__view, $__vars = array())
+    {
+        extract($__vars);
+        ob_start();
+        include($__view);
+        return ob_get_clean();
     }
 
     /**
@@ -77,6 +97,9 @@ class Perfect
             }
         }
 
+        self::$page['controller_name'] = $controller;
+        self::$page['method_name'] = $method;
+
         // Turn the controller name into a class name
         $words = explode('-', $controller);
         $controller = '';
@@ -85,6 +108,8 @@ class Perfect
             $controller .= ucfirst($word);
         }
         $controller .= 'Controller';
+
+        self::$page['controller_class'] = $controller;
 
         return array($controller, $method, $params);
     }
