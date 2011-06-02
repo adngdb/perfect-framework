@@ -36,19 +36,27 @@ class Perfect
         call_user_func_array(array(self::$controller, $method), $params);
     }
 
+    /**
+     * Render the application depending on the asked page.
+     */
     public static function render($__vars = array())
     {
+        // Execute the asked view and get it's content
         self::$contentForLayout = self::renderView(
             APPLICATION_ROOT . 'application/views/' . self::$page['controller_name'] . '/' . self::$page['method_name'] . '.phtml',
             self::$controller->getVars()
         );
 
+        // Display the layout
         extract($__vars);
         ob_start();
         include('application/views/' . self::$config->get('layout') . '.phtml');
         echo ob_get_clean();
     }
 
+    /**
+     * Return the content of a single view.
+     */
     private static function renderView($__view, $__vars = array())
     {
         extract($__vars);
@@ -114,6 +122,9 @@ class Perfect
         return array($controller, $method, $params);
     }
 
+    /**
+     * Autoload classes depending on their name
+     */
     public static function autoload($class)
     {
         if (class_exists($class, false))
